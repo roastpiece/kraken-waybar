@@ -15,3 +15,10 @@
   },
 }
 ```
+
+## Todo(nt?)'s
+* [ ] Actually make shown symbol configurable
+* [ ] Multiple Symbols
+
+These require authentication
+* [ ] Open trade orders

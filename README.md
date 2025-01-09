@@ -19,6 +19,7 @@
 ## Todo(nt?)'s
 * [ ] Actually make shown symbol configurable
 * [ ] Multiple Symbols
+* [ ] consolidate multiple instances (eg. multiple displays, multiple modules) to use only 1 websocket
 
 These require authentication
 * [ ] Open trade orders

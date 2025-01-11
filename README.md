@@ -2,7 +2,7 @@
 ```jsonc
 {
   "custom/kraken": {
-      "exec": "kraken-waybar",
+      "exec": "kraken-waybar ETH/CHF",
       "restart-interval": 30,
       "return-type": "json",
       "escape": true,
@@ -17,7 +17,7 @@
 ```
 
 ## Todo(nt?)'s
-* [ ] Actually make shown symbol configurable
+* [x] Actually make shown symbol configurable
 * [ ] Multiple Symbols
 * [ ] consolidate multiple instances (eg. multiple displays, multiple modules) to use only 1 websocket
 

@@ -5,7 +5,7 @@ use crate::waybar::WaybarUpdate;
 
 #[skip_serializing_none]
 #[derive(Serialize, Deserialize, Debug, Default)]
-pub(crate) struct TickerSubscribe {
+pub struct TickerSubscribe {
     method: String,
     params: TickerSubscribeParams,
     req_id: Option<i32>,
@@ -21,7 +21,7 @@ struct TickerSubscribeParams {
 }
 
 impl TickerSubscribe {
-    pub(crate) fn bbo(symbol: &str) -> TickerSubscribe {
+    pub fn bbo(symbol: &str) -> TickerSubscribe {
         TickerSubscribe {
             method: "subscribe".to_string(),
             params: TickerSubscribeParams {
@@ -34,7 +34,7 @@ impl TickerSubscribe {
         }
     }
 
-    pub(crate) fn trades(symbol: &str) -> TickerSubscribe {
+    pub fn trades(symbol: &str) -> TickerSubscribe {
         TickerSubscribe {
             method: "subscribe".to_string(),
             params: TickerSubscribeParams {
@@ -68,7 +68,7 @@ impl From<&TickerUpdateData> for WaybarUpdate {
     fn from(value: &TickerUpdateData) -> Self {
         let trend = if value.change_pct > 0.0 { "positive" } else { "negative" }.to_string();
         return WaybarUpdate {
-            text: format!("{} {:.1}", value.symbol, value.ask),
+            text: format!("{:+.1}% {} {:.1}", value.change_pct, value.symbol, value.ask),
             alt: trend.clone(),
             tooltip: format!("{:.2} / {:.2}\n24h: {:+.1}%", value.bid, value.ask, value.change_pct),
             percentage: value.change_pct,

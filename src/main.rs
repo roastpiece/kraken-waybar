@@ -2,19 +2,27 @@ mod ticker;
 mod kraken;
 mod waybar;
 
+use std::env;
 use kraken::{AckResponse, DataResponse};
 use waybar::WaybarUpdate;
 use websocket::{ClientBuilder, Message, OwnedMessage};
 use ticker::{TickerSubscribe, TickerUpdateData};
 
 fn main() {
+    let args = env::args().collect::<Vec<String>>();
+
+    if args.len() < 2 {
+        println!("Usage: {} <symbol>", args[0]);
+        return;
+    }
+
     let mut client = ClientBuilder::new("wss:///ws.kraken.com/v2")
         .unwrap()
         .connect_secure(None)
         .unwrap();
 
     let subscribe_message =
-        Message::text(serde_json::to_string(&TickerSubscribe::bbo("ETH/CHF")).unwrap());
+        Message::text(serde_json::to_string(&TickerSubscribe::bbo(&args[1])).unwrap());
 
     client.send_message(&subscribe_message).unwrap();
 
@@ -24,7 +32,7 @@ fn main() {
             break;
         }
 
-        if let Ok(message) = message{
+        if let Ok(message) = message {
             match message {
                 OwnedMessage::Text(text) =>{
                     if let Ok(_ack) = serde_json::from_str::<AckResponse>(&text) {
@@ -36,7 +44,7 @@ fn main() {
                             "ticker" => {
                                 let ticker_data: TickerUpdateData = serde_json::from_value(data.data[0].clone()).unwrap();
                                 let waybar_update = WaybarUpdate::from(&ticker_data);
-                                println!("{}", serde_json::to_string(&waybar_update).unwrap());
+                                println!("{}", waybar_update);
                             },
                             _ => {}
                         }

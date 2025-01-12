@@ -13,5 +13,5 @@ pub(crate) struct AckResponse {
 pub(crate) struct DataResponse {
     pub(crate) channel: String,
     pub(crate) r#type: String,
-    pub(crate) data: Vec<Value>,
+    pub(crate) data: Value,
 }

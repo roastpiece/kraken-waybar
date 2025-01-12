@@ -40,10 +40,10 @@ fn main() -> ExitResult {
                     if let Ok(data) = serde_json::from_str::<DataResponse>(&text) {
                         match data.channel.as_str() {
                             "ticker" => {
-                                let ticker_data: TickerUpdateData =
-                                    serde_json::from_value(data.data[0].clone()).unwrap();
-                                let waybar_update = WaybarUpdate::from(&ticker_data);
-                                println!("{}", waybar_update);
+                                let ticker_data: Vec<TickerUpdateData> =
+                                    serde_json::from_value(data.data).unwrap();
+                                let waybar_update = WaybarUpdate::from(&ticker_data[0]);
+                                println!("{waybar_update}");
                             }
                             _ => {}
                         }

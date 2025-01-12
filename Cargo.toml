@@ -1,7 +1,11 @@
 [package]
 name = "kraken-waybar"
+description = "Custom waybar module to show live crypto prices from the kraken websocket api."
 version = "0.1.0"
 edition = "2021"
+license = "MIT"
+keywords = ["kraken", "waybar", "wayland", "crypto", "cryptocurrency"]
+categories = ["command-line-utilities", "finance"]
 
 [dependencies]
 serde = { version = "1.0.217", features = ["derive"] }

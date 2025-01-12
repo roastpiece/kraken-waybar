@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
+use tungstenite::Message;
 
 use crate::waybar::WaybarUpdate;
 
@@ -46,6 +47,12 @@ impl TickerSubscribe {
             },
             req_id: None,
         }
+    }
+}
+
+impl From<TickerSubscribe> for Message {
+    fn from(value: TickerSubscribe) -> Self {
+        Message::Text(serde_json::to_string(&value).unwrap().into())
     }
 }
 

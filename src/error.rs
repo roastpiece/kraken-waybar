@@ -1,9 +1,6 @@
 use std::{
-    fmt::{Debug, Display},
-    process::Termination,
+    error::Error, fmt::{Debug, Display}, process::Termination
 };
-
-use websocket::WebSocketError;
 
 use crate::{kraken::AckResponse, waybar::WaybarUpdate};
 
@@ -12,7 +9,7 @@ pub(crate) enum ExitResult {
     Ok,
     MissingSymbolArgument,
     Disconnected,
-    WebSocketError(WebSocketError),
+    WebSocketError(Box<dyn Error>),
     ApiError(AckResponse),
 }
 

@@ -1,14 +1,14 @@
-mod ticker;
-mod kraken;
-mod waybar;
 mod error;
+mod kraken;
+mod ticker;
+mod waybar;
 
-use std::env;
 use error::ExitResult;
 use kraken::{AckResponse, DataResponse};
-use waybar::WaybarUpdate;
-use websocket::{ClientBuilder, Message, OwnedMessage};
+use std::env;
 use ticker::{TickerSubscribe, TickerUpdateData};
+use tungstenite::{connect, http::Uri, ClientRequestBuilder, Message};
+use waybar::WaybarUpdate;
 
 fn main() -> ExitResult {
     let args = env::args().collect::<Vec<String>>();
@@ -17,24 +17,20 @@ fn main() -> ExitResult {
         return ExitResult::MissingSymbolArgument;
     }
 
-    let mut client = ClientBuilder::new("wss:///ws.kraken.com/v2")
-        .unwrap()
-        .connect_secure(None)
-        .unwrap();
+    let uri: Uri = "wss://ws.kraken.com/v2".parse().unwrap();
+    let builder = ClientRequestBuilder::new(uri);
 
-    let subscribe_message =
-        Message::text(serde_json::to_string(&TickerSubscribe::bbo(&args[1])).unwrap());
+    let (mut socket, _) = connect(builder).unwrap();
+    let subscribe_message = TickerSubscribe::bbo(&args[1]);
 
-    client.send_message(&subscribe_message).unwrap();
+    if let Err(e) = socket.send(subscribe_message.into()) {
+        return ExitResult::WebSocketError(e.into());
+    }
 
-    for message in client.incoming_messages() {
-        if let Err(message) = message {
-            return ExitResult::WebSocketError(message);
-        }
-
-        if let Ok(message) = message {
-            match message {
-                OwnedMessage::Text(text) =>{
+    loop {
+        match socket.read() {
+            Ok(message) => match message {
+                Message::Text(text) => {
                     if let Ok(ack) = serde_json::from_str::<AckResponse>(&text) {
                         if !ack.success {
                             return ExitResult::ApiError(ack);
@@ -44,22 +40,21 @@ fn main() -> ExitResult {
                     if let Ok(data) = serde_json::from_str::<DataResponse>(&text) {
                         match data.channel.as_str() {
                             "ticker" => {
-                                let ticker_data: TickerUpdateData = serde_json::from_value(data.data[0].clone()).unwrap();
+                                let ticker_data: TickerUpdateData =
+                                    serde_json::from_value(data.data[0].clone()).unwrap();
                                 let waybar_update = WaybarUpdate::from(&ticker_data);
                                 println!("{}", waybar_update);
-                            },
+                            }
                             _ => {}
                         }
-                    
                     }
-                },
-                OwnedMessage::Close(_) => break,
+                }
+                Message::Close(_) => break,
                 _ => {}
             }
+            Err(e) => return ExitResult::WebSocketError(e.into()),
         }
     }
 
     return ExitResult::Disconnected;
-
 }
-

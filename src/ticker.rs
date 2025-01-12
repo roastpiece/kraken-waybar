@@ -34,6 +34,7 @@ impl TickerSubscribe {
         }
     }
 
+    #[allow(dead_code)]
     pub fn trades(symbol: &str) -> TickerSubscribe {
         TickerSubscribe {
             method: "subscribe".to_string(),

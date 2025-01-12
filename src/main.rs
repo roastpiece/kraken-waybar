@@ -1,19 +1,20 @@
 mod ticker;
 mod kraken;
 mod waybar;
+mod error;
 
 use std::env;
+use error::ExitResult;
 use kraken::{AckResponse, DataResponse};
 use waybar::WaybarUpdate;
 use websocket::{ClientBuilder, Message, OwnedMessage};
 use ticker::{TickerSubscribe, TickerUpdateData};
 
-fn main() {
+fn main() -> ExitResult {
     let args = env::args().collect::<Vec<String>>();
 
     if args.len() < 2 {
-        println!("Usage: {} <symbol>", args[0]);
-        return;
+        return ExitResult::MissingSymbolArgument;
     }
 
     let mut client = ClientBuilder::new("wss:///ws.kraken.com/v2")
@@ -28,15 +29,16 @@ fn main() {
 
     for message in client.incoming_messages() {
         if let Err(message) = message {
-            println!("Error: {:?}", message);
-            break;
+            return ExitResult::WebSocketError(message);
         }
 
         if let Ok(message) = message {
             match message {
                 OwnedMessage::Text(text) =>{
-                    if let Ok(_ack) = serde_json::from_str::<AckResponse>(&text) {
-                        // ignored
+                    if let Ok(ack) = serde_json::from_str::<AckResponse>(&text) {
+                        if !ack.success {
+                            return ExitResult::ApiError(ack);
+                        }
                     }
 
                     if let Ok(data) = serde_json::from_str::<DataResponse>(&text) {
@@ -56,5 +58,8 @@ fn main() {
             }
         }
     }
+
+    return ExitResult::Disconnected;
+
 }
 

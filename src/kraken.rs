@@ -4,8 +4,8 @@ use serde::{Deserialize, Serialize};
 #[derive(Serialize, Deserialize, Debug)]
 pub(crate) struct AckResponse {
     pub(crate) method: String,
-    pub(crate) result: Map<String, Value>,
     pub(crate) success: bool,
+    pub(crate) result: Option<Map<String, Value>>,
     pub(crate) error: Option<String>,
 }
 

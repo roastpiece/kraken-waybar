@@ -6,6 +6,7 @@ edition = "2021"
 license = "MIT"
 keywords = ["kraken", "waybar", "wayland", "crypto", "cryptocurrency"]
 categories = ["command-line-utilities", "finance"]
+repository = "https://github.com/roastpiece/kraken-waybar"
 
 [dependencies]
 serde = { version = "1.0.217", features = ["derive"] }

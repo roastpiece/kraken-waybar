@@ -16,6 +16,7 @@
   },
 }
 ```
+Icons from [Nerd Fonts](https://www.nerdfonts.com)
 
 ## Styling
 This module sets the following css classes: `.negative`, `.positive`, `.error`.

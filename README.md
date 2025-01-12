@@ -10,9 +10,26 @@
       "format-icons": {
           "negative": "󰔳",
           "positive": "󰔵",
+          "error": "",
       },
       "on-click": "xdg-open https://pro.kraken.com/app/trade/eth-chf",
   },
+}
+```
+
+## Styling
+This module sets the following css classes: `.negative`, `.positive`, `.error`.
+
+Example:
+```css
+#custom-kraken.positive {
+  color: #81b57f;
+}
+#custom-kraken.negative {
+  color: #b5867f;
+}
+#custom-kraken.error {
+  color: #f00;
 }
 ```
 
